@@ -6,7 +6,7 @@ const Response = require("../model/response")
 const addLaptop = asyncHandler ( async (req,res) => {
     try {
         const request = await laptopValidator.validateAsync(req.body)
-        const nameLaptop = await laptopModel.findOne({name : req.body.name})
+        const nameLaptop = await laptopModel.findOne({name : request.name})
 
         if(nameLaptop) {
             const response = new Response.Error(true, "Laptop name already used")

@@ -17,6 +17,7 @@ app.use( bodyParser.urlencoded ({ extended : false}))
 app.use( bodyParser.json() )
 
 app.use("/laptop", require("./module/route/laptoproute"))
+app.use("/user", require("./module/route/userroute"))
 
 app.get("/", (req,res) => {
     console.log("Response Success");
