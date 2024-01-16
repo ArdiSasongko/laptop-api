@@ -49,7 +49,8 @@ const login = asyncHandler (async (req,res) => {
                 user : {
                     id : user.id,
                     username : user.username,
-                    email : user.email
+                    email : user.email,
+                    type : user.type
                 }
             }, process.env.KEY, { expiresIn : 15000})
 
@@ -67,4 +68,34 @@ const login = asyncHandler (async (req,res) => {
     }
 })
 
-module.exports = { register, login }
+const getDataUser = asyncHandler (async (req,res) => {
+    try {
+        const userType = req.user.type
+
+        if(userType !== "Admin") {
+            const response = new Response.Error(true, "Only Admin can access this feature")
+            return res.status(403).json(response)
+        }
+
+        const listUsers = await userModel.find()
+
+        if(listUsers.length === 0) {
+            const response = new Response.Error(true, "Users not found")
+            return res.status(404).json(response)
+        }
+
+        const result = listUsers.map(user => ({
+            id : user.id,
+            name : user.name,
+            email : user.email,
+        }))
+
+        const response = new Response.Success(false, "Users Found", result)
+        return res.status(200).json(response)
+    } catch (error) {
+        const response = new Response.Error(true, error.message)
+        return res.status(400).json(response)
+    }
+})
+
+module.exports = { register, login, getDataUser }

@@ -22,7 +22,7 @@ const register = asyncHandler (async (req,res) => {
             return res.status(400).json(response)
         }
 
-        const hashedpassword= await bcrypt.hash(request.hashedpassword, 12)
+        const hashedpassword= await bcrypt.hash(request.password, 12)
         request.password = hashedpassword
 
         const newAdmin = new adminModel(request)
@@ -46,7 +46,8 @@ const login = asyncHandler (async (req,res) => {
             const jwt = jwtToken.sign({
                 user : {
                     id : user.id,
-                    email : user.email
+                    email : user.email,
+                    type : user.type
                 }
             }, process.env.KEY, { expiresIn : 15000 })
 
@@ -54,11 +55,11 @@ const login = asyncHandler (async (req,res) => {
             const response = new Response.Success(false, "Login Success", result)
             return res.status(200).json(response)
         }else {
-            const response = new Response.Error(true, "Invalid Data")
+            const response = new Response.Error(true, "Email or Password not valid")
             return res.status(400).json(response)
         }
     } catch (error) {
-        const response = new Response.Error(true, "Invalid Data")
+        const response = new Response.Error(true, error.message)
         return res.status(400).json(response)
     }
 })
