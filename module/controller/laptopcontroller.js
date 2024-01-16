@@ -41,4 +41,47 @@ const getLaptops = asyncHandler (async (req,res) => {
     }
 })
 
-module.exports= { addLaptop, getLaptops}
+const updateLaptop = asyncHandler (async (req,res) => {
+    try {
+        const laptop = await laptopModel.findById(req.params.id)
+
+        if(!laptop){
+            const response = new Response.Error(true, "Laptop not found")
+            return res.status(404).json(response)
+        }
+
+        const updatelaptop = await laptopModel.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            { new : true }
+        )
+
+        const response = new Response.Success(false, "Laptop success to update", updatelaptop.name)
+        return res.status(202).json(response)
+    } catch (error) {
+        const response = new Response.Error(true, error.message)
+        return res.status(400).json(response)
+    }
+})
+
+const deleteLaptop = asyncHandler (async (req,res) => {
+    try {
+        const laptop = await laptopModel.findById(req.params.id)
+
+        if(!laptop) {
+            const response = new Response.Error(true, "laptop not found")
+            return res.status(404).json(response)
+        }
+
+        const deletelaptop = await laptopModel.findByIdAndDelete(req.params.id)
+
+        const response = new Response.Success(false, "Laptop success to delete", deletelaptop.name)
+        return res.status(202).json(response)
+        
+    } catch (error) {
+        const response = new Response.Error(true, error.message)
+        return res.status(400).json(response)
+    }
+})
+
+module.exports= { addLaptop, getLaptops, updateLaptop, deleteLaptop}
